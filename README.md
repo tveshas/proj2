@@ -109,12 +109,12 @@ p2/
 
 ## Deployment
 
-This is a FastAPI backend application. For deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
+This is a FastAPI backend application. For deployment instructions, see the guides below.
 
-**Quick Deploy Options:**
-- **Railway**: Connect GitHub repo → Auto-deploy (recommended)
-- **Render**: Connect GitHub repo → Web Service
-- **Fly.io**: Use Fly CLI for deployment
+**Free Deployment Options:**
+- **Render** (Recommended): [RENDER_DEPLOY.md](RENDER_DEPLOY.md) - Free tier, easy GitHub integration
+- **Fly.io**: [FLY_DEPLOY.md](FLY_DEPLOY.md) - Generous free tier, CLI-based
+- **Other options**: See [DEPLOYMENT.md](DEPLOYMENT.md) for more platforms
 
 All platforms provide HTTPS URLs automatically. Make sure to set environment variables (`EMAIL`, `SECRET`, `OPENAI_API_KEY`) in your deployment platform.
 
