@@ -1,0 +1,30 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium
+      
+      - name: Run tests (if any)
+        run: |
+          echo "Add tests here if needed"
+      
+      # Note: Railway deployment would require Railway CLI or GitHub integration
+      # This is a template - configure Railway GitHub integration in Railway dashboard
+

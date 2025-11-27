@@ -107,6 +107,17 @@ p2/
 └── run.py
 ```
 
+## Deployment
+
+This is a FastAPI backend application. For deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
+**Quick Deploy Options:**
+- **Railway**: Connect GitHub repo → Auto-deploy (recommended)
+- **Render**: Connect GitHub repo → Web Service
+- **Fly.io**: Use Fly CLI for deployment
+
+All platforms provide HTTPS URLs automatically. Make sure to set environment variables (`EMAIL`, `SECRET`, `OPENAI_API_KEY`) in your deployment platform.
+
 ## License
 
 MIT License
