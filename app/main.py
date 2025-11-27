@@ -4,6 +4,7 @@ import logging
 from typing import Dict, Any
 from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ValidationError
 import asyncio
 
@@ -18,6 +19,20 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Quiz Solver API", version="1.0.0")
+
+# Add CORS middleware to allow requests from GitHub Pages
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://tveshas.github.io",
+        "http://localhost:8000",
+        "http://localhost:3000",
+        "http://127.0.0.1:8000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Initialize quiz solver
 quiz_solver = QuizSolver()

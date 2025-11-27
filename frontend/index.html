@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Solver API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .result.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .api-url {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Quiz Solver API</h1>
+        <p class="subtitle">Submit quiz tasks to be solved automatically</p>
+        
+        <div class="api-url" id="apiUrl">
+            <strong>API Endpoint:</strong> <span id="apiEndpoint">Loading...</span>
+        </div>
+        
+        <form id="quizForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required placeholder="your-email@example.com">
+            </div>
+            <div class="form-group">
+                <label for="secret">Secret</label>
+                <input type="password" id="secret" required placeholder="your-secret-string">
+            </div>
+            <div class="form-group">
+                <label for="url">Quiz URL</label>
+                <input type="url" id="url" required placeholder="https://example.com/quiz-834">
+            </div>
+            <button type="submit" id="submitBtn">
+                Submit Quiz Task
+            </button>
+        </form>
+        
+        <div class="result" id="result"></div>
+    </div>
+    
+    <script>
+        // Get API endpoint - will be injected by GitHub Actions or use default
+        // You can also set this manually by editing this file
+        const API_ENDPOINT = window.API_ENDPOINT || 'https://your-api-url.railway.app';
+        
+        // Try to get from meta tag or use default
+        const metaEndpoint = document.querySelector('meta[name="api-endpoint"]')?.content;
+        const finalEndpoint = metaEndpoint || API_ENDPOINT;
+        
+        document.getElementById('apiEndpoint').textContent = finalEndpoint;
+        
+        const form = document.getElementById('quizForm');
+        const result = document.getElementById('result');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const secret = document.getElementById('secret').value;
+            const url = document.getElementById('url').value;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span>Submitting...';
+            result.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_ENDPOINT}/quiz`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, secret, url })
+                });
+                
+                const data = await response.json();
+                
+                result.style.display = 'block';
+                
+                if (response.ok) {
+                    result.className = 'result success';
+                    result.innerHTML = `
+                        <strong>✅ Success!</strong><br>
+                        Quiz task received and processing started.<br>
+                        The quiz is being solved in the background.
+                    `;
+                } else {
+                    result.className = 'result error';
+                    result.innerHTML = `
+                        <strong>❌ Error:</strong><br>
+                        ${data.detail || 'Unknown error occurred'}
+                    `;
+                }
+            } catch (error) {
+                result.style.display = 'block';
+                result.className = 'result error';
+                result.innerHTML = `
+                    <strong>❌ Network Error:</strong><br>
+                    ${error.message}<br>
+                    <small>Make sure the API endpoint is correct and accessible.</small>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Quiz Task';
+            }
+        });
+        
+        // Test API connection on load
+        fetch(`${API_ENDPOINT}/health`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'healthy') {
+                    document.getElementById('apiEndpoint').style.color = '#28a745';
+                }
+            })
+            .catch(() => {
+                document.getElementById('apiEndpoint').style.color = '#dc3545';
+            });
+    </script>
+</body>
+</html>
+
